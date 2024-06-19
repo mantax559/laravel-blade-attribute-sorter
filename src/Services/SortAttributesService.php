@@ -59,7 +59,7 @@ class SortAttributesService
 
         foreach ($attributes as $attribute) {
             $name = $attribute[1] ?? $attribute[3];
-            if (in_array($name, $customOrder)) {
+            if ($this->matchesPattern($name, $customOrder)) {
                 $sortedAttributes[$name] = trim($attribute[0]);
             } else {
                 $remainingAttributes[$name] = trim($attribute[0]);
@@ -68,9 +68,21 @@ class SortAttributesService
 
         $finalAttributes = [];
         foreach ($customOrder as $key) {
-            if (isset($sortedAttributes[$key])) {
-                $finalAttributes[] = $sortedAttributes[$key];
-                unset($remainingAttributes[$key]);
+            if (strpos($key, '*') !== false) {
+                $wildcardAttributes = [];
+                foreach ($sortedAttributes as $attrName => $attrValue) {
+                    if ($this->matchesPattern($attrName, [$key])) {
+                        $wildcardAttributes[$attrName] = $attrValue;
+                        unset($sortedAttributes[$attrName]);
+                    }
+                }
+                ksort($wildcardAttributes);
+                $finalAttributes = array_merge($finalAttributes, $wildcardAttributes);
+            } else {
+                if (isset($sortedAttributes[$key])) {
+                    $finalAttributes[] = $sortedAttributes[$key];
+                    unset($sortedAttributes[$key]);
+                }
             }
         }
 
@@ -87,5 +99,16 @@ class SortAttributesService
         }
 
         return implode(' ', $finalAttributes);
+    }
+
+    private function matchesPattern(string $attribute, array $patterns): bool
+    {
+        foreach ($patterns as $pattern) {
+            if (fnmatch($pattern, $attribute)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

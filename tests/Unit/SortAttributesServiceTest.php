@@ -26,7 +26,7 @@ class SortAttributesServiceTest extends TestCase
         $this->sortAttributesService = new SortAttributesService();
     }
 
-    public function testSetAttributeOrderWithOnlyDefault()
+    public function testSetAttributeOrderWithOnlyDefault(): void
     {
         $defaultOrder = ['data-id', 'data-name', 'data-class'];
         $customOrder = null;
@@ -41,7 +41,7 @@ class SortAttributesServiceTest extends TestCase
         $this->assertEquals($expectedOrder, $result);
     }
 
-    public function testSetAttributeOrderWithOnlyCustom()
+    public function testSetAttributeOrderWithOnlyCustom(): void
     {
         $defaultOrder = null;
         $customOrder = ['div' => ['data-id', 'data-name', 'data-class']];
@@ -56,12 +56,12 @@ class SortAttributesServiceTest extends TestCase
         $this->assertEquals($expectedOrder, $result);
     }
 
-    public function testSetAttributeOrderWithBothDefaultAndCustom()
+    public function testSetAttributeOrderWithBothDefaultAndCustom(): void
     {
         $defaultOrder = ['data-id', 'data-name', 'data-class'];
         $customOrder = [
             'div' => ['data-id', 'data-name', 'data-class'],
-            'span' => ['class', 'id']
+            'span' => ['class', 'id'],
         ];
 
         $expectedOrder = [
@@ -75,7 +75,7 @@ class SortAttributesServiceTest extends TestCase
         $this->assertEquals($expectedOrder, $result);
     }
 
-    public function testSetAttributeOrderWithEmptyBoth()
+    public function testSetAttributeOrderWithEmptyBoth(): void
     {
         $defaultOrder = [];
         $customOrder = [];
@@ -90,7 +90,7 @@ class SortAttributesServiceTest extends TestCase
         $this->assertEquals($expectedOrder, $result);
     }
 
-    public function testSortAttributesForEmptyDivTag()
+    public function testSortAttributesForEmptyDivTag(): void
     {
         $this->assertEquals(
             '<div>',
@@ -98,7 +98,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForDivTagWithIdAttribute()
+    public function testSortAttributesForDivTagWithIdAttribute(): void
     {
         $this->assertEquals(
             '<div id="test">',
@@ -106,7 +106,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForDivTagWithIdAndClassAttributes()
+    public function testSortAttributesForDivTagWithIdAndClassAttributes(): void
     {
         $this->assertEquals(
             '<div id="test" class="test">',
@@ -114,7 +114,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForInputTagWithNameAndIdAttributes()
+    public function testSortAttributesForInputTagWithNameAndIdAttributes(): void
     {
         $this->assertEquals(
             '<input name="test" id="test">',
@@ -122,7 +122,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForInputTagWithNameIdAndClassAttributes()
+    public function testSortAttributesForInputTagWithNameIdAndClassAttributes(): void
     {
         $this->assertEquals(
             '<input name="test" id="test" class="test">',
@@ -130,7 +130,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForInputTagWithNameIdClassAndRequiredAttributes()
+    public function testSortAttributesForInputTagWithNameIdClassAndRequiredAttributes(): void
     {
         $this->assertEquals(
             '<input name="test" id="test" class="test" required>',
@@ -138,7 +138,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForInputTagWithAllCommonAttributes()
+    public function testSortAttributesForInputTagWithAllCommonAttributes(): void
     {
         $this->assertEquals(
             '<input name="test" id="test" class="test" min="test" max=test required>',
@@ -146,7 +146,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForInputTagWithAdditionalAttributes()
+    public function testSortAttributesForInputTagWithAdditionalAttributes(): void
     {
         $this->assertEquals(
             '<input name=test id=\'test\' class=test min="test" max="test" pattern="test" required type="text" value="test">',
@@ -154,7 +154,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForInputTagWithCustomAndDefaultAttributes()
+    public function testSortAttributesForInputTagWithCustomAndDefaultAttributes(): void
     {
         $this->assertEquals(
             '<input name="custom" id="custom" class="custom" data-custom="value" type="text">',
@@ -162,7 +162,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForDivTagWithUnorderedAttributes()
+    public function testSortAttributesForDivTagWithUnorderedAttributes(): void
     {
         $this->assertEquals(
             '<div id="divId" class="divClass" data-custom="value">',
@@ -170,7 +170,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForSelfClosingDivTagWithUnorderedAttributes()
+    public function testSortAttributesForSelfClosingDivTagWithUnorderedAttributes(): void
     {
         $this->assertEquals(
             '<div id="divId" class="divClass" data-custom="value" />',
@@ -178,7 +178,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForSelfClosingDivTagWithSpaceBeforeSlash()
+    public function testSortAttributesForSelfClosingDivTagWithSpaceBeforeSlash(): void
     {
         $this->assertEquals(
             '<div id="divId" class="divClass" data-custom="value" />',
@@ -186,11 +186,11 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForXFormInputWithCustomOrder()
+    public function testSortAttributesForXFormInputWithCustomOrder(): void
     {
         $defaultOrder = [];
         $customOrder = [
-            'x-form::input' => ['enctype', 'wire:click.prevent-custom.select', ':selected', 'action']
+            'x-form::input' => ['enctype', 'wire:click.prevent-custom.select', ':selected', 'action'],
         ];
 
         $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -201,7 +201,7 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForNestedComponentAttributes()
+    public function testSortAttributesForNestedComponentAttributes(): void
     {
         $defaultOrder = [];
         $customOrder = [
@@ -216,18 +216,18 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
-    public function testSortAttributesForComplexCustomAttributes()
+    public function testSortAttributesForComplexCustomAttributes(): void
     {
         $defaultOrder = [];
         $customOrder = [
-            'x-complex::form' => ['wire:model', 'data-custom', ':value', '@submit'],
+            'x-complex::form' => ['wire:model', 'data-*', ':value', 'aria-*', '@submit'],
         ];
 
         $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
 
         $this->assertEquals(
-            '<x-complex::form wire:model="formData" data-custom={{ $random }} :value="formValue" @submit=handleSubmit enctype=multipart/form-data method="POST" />',
-            $this->sortAttributesService->sortAttributes('<x-complex::form method="POST" enctype=multipart/form-data @submit=handleSubmit data-custom={{ $random }} wire:model="formData" :value="formValue" />')
+            '<x-complex::form wire:model="formData" data-custom={{ $random }} :value="formValue" aria-describedby="test" aria-label="test" @submit=handleSubmit enctype=multipart/form-data method="POST" />',
+            $this->sortAttributesService->sortAttributes('<x-complex::form method="POST" enctype=multipart/form-data @submit=handleSubmit data-custom={{ $random }} wire:model="formData" aria-label="test" :value="formValue" aria-describedby="test" />')
         );
     }
 }
