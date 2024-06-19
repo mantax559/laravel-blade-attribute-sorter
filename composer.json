@@ -1,0 +1,42 @@
+{
+  "name": "mantax559/laravel-blade-attribute-sorter",
+  "description": "Laravel Blade Attribute Sorter",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [],
+  "authors": [
+    {
+      "name": "mantax559"
+    }
+  ],
+  "require": {
+    "php": "^8.0",
+    "laravel/framework": "^9.0|^10.0"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.0",
+    "orchestra/testbench": "^8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mantax559\\LaravelBladeAttributeSorter\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mantax559\\LaravelBladeAttributeSorter\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Mantax559\\LaravelBladeAttributeSorter\\Providers\\AppServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
