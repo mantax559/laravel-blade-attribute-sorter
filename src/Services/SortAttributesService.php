@@ -9,7 +9,7 @@ class SortAttributesService
     public function __construct()
     {
         $this->attributeOrder = array_merge(
-            (array) config('laravel-blade-attribute-sorter.default'),
+            ['default' => config('laravel-blade-attribute-sorter.default')],
             (array) config('laravel-blade-attribute-sorter.custom'),
         );
     }

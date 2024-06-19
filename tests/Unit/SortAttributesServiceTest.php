@@ -14,9 +14,7 @@ class SortAttributesServiceTest extends TestCase
         parent::setUp();
 
         config([
-            'laravel-blade-attribute-sorter.default' => [
-                'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
-            ],
+            'laravel-blade-attribute-sorter.default' => ['id', 'name', 'class', 'min', 'max', 'required'],
             'laravel-blade-attribute-sorter.custom' => [
                 'input' => ['name', 'id', 'class'],
                 'form' => [],
