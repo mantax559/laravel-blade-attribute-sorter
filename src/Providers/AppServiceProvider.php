@@ -2,7 +2,7 @@
 
 namespace Mantax559\LaravelBladeAttributeSorter\Providers;
 
-use App\Console\Commands\SortBladeAttributesCommand;
+use Mantax559\LaravelBladeAttributeSorter\Commands\SortBladeAttributesCommand;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Mantax559\LaravelBladeAttributeSorter\Commands;
 
-use App\Services\SortAttributesService;
+use Mantax559\LaravelBladeAttributeSorter\Services\SortAttributesService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 

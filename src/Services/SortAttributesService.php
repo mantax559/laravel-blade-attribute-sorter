@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Mantax559\LaravelBladeAttributeSorter\Services;
 
 class SortAttributesService
 {
@@ -46,7 +46,7 @@ class SortAttributesService
         }, $content);
     }
 
-    public function sortAttributesByOrder(string $tag, array $attributes): string
+    private function sortAttributesByOrder(string $tag, array $attributes): string
     {
         $customOrder = $this->attributeOrder[$tag] ?? null;
         $defaultOrder = $this->attributeOrder['default'];
@@ -64,6 +64,14 @@ class SortAttributesService
         }
 
         $finalAttributes = [];
+        if ($customOrder) {
+            foreach ($customOrder as $key) {
+                if (isset($sortedAttributes[$key])) {
+                    $finalAttributes[] = $sortedAttributes[$key];
+                }
+            }
+        }
+
         foreach ($defaultOrder as $key) {
             if (isset($remainingAttributes[$key])) {
                 $finalAttributes[] = $remainingAttributes[$key];
@@ -74,14 +82,6 @@ class SortAttributesService
         ksort($remainingAttributes);
         foreach ($remainingAttributes as $attr) {
             $finalAttributes[] = $attr;
-        }
-
-        if ($customOrder) {
-            foreach ($customOrder as $key) {
-                if (isset($sortedAttributes[$key])) {
-                    array_unshift($finalAttributes, $sortedAttributes[$key]);
-                }
-            }
         }
 
         return implode(' ', $finalAttributes);
