@@ -15,45 +15,94 @@ class SortAttributesServiceTest extends TestCase
 
         config([
             'laravel-blade-attribute-sorter.default' => [
-                'default' => ['id', 'name', 'class'],
+                'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
             ],
             'laravel-blade-attribute-sorter.custom' => [
                 'input' => ['name', 'id', 'class'],
+                'form' => [],
             ],
         ]);
 
         $this->sortAttributesService = new SortAttributesService();
     }
 
-    public function test_case_1()
+    public function testEmptyDivTag()
     {
         $this->assertEquals(
-            expected: '<div>',
-            actual: $this->sortAttributesService->sortAttributes('<div>'),
+            '<div>',
+            $this->sortAttributesService->sortAttributes('<div>')
         );
     }
 
-    public function test_case_2()
+    public function testDivTagWithIdAttribute()
     {
         $this->assertEquals(
-            expected: '<div id="test">',
-            actual: $this->sortAttributesService->sortAttributes('<div id="test">'),
+            '<div id="test">',
+            $this->sortAttributesService->sortAttributes('<div id="test">')
         );
     }
 
-    public function test_case_3()
+    public function testDivTagWithIdAndClassAttributes()
     {
         $this->assertEquals(
-            expected: '<div id="test" name="test">',
-            actual: $this->sortAttributesService->sortAttributes('<div name="test" id="test">'),
+            '<div id="test" class="test">',
+            $this->sortAttributesService->sortAttributes('<div class="test" id="test">')
         );
     }
 
-    public function test_case_4()
+    public function testInputTagWithNameAndIdAttributes()
     {
         $this->assertEquals(
-            expected: '<input name="test" id="test">',
-            actual: $this->sortAttributesService->sortAttributes('<input id="test" name="test">'),
+            '<input name="test" id="test">',
+            $this->sortAttributesService->sortAttributes('<input id="test" name="test">')
+        );
+    }
+
+    public function testInputTagWithNameIdAndClassAttributes()
+    {
+        $this->assertEquals(
+            '<input name="test" id="test" class="test">',
+            $this->sortAttributesService->sortAttributes('<input id="test" class="test" name="test">')
+        );
+    }
+
+    public function testInputTagWithNameIdClassAndRequiredAttributes()
+    {
+        $this->assertEquals(
+            '<input name="test" id="test" class="test" required>',
+            $this->sortAttributesService->sortAttributes('<input id="test" required class="test" name="test">')
+        );
+    }
+
+    public function testInputTagWithAllCommonAttributes()
+    {
+        $this->assertEquals(
+            '<input name="test" id="test" class="test" min="test" max=test required>',
+            $this->sortAttributesService->sortAttributes('<input id="test" max=test required min="test" class="test" name="test">')
+        );
+    }
+
+    public function testInputTagWithAdditionalAttributes()
+    {
+        $this->assertEquals(
+            '<input name=test id=\'test\' class=test min="test" max="test" required pattern="test" type="text" value="test">',
+            $this->sortAttributesService->sortAttributes('<input id=\'test\' type="text" value="test" pattern="test" max="test" required min="test" class=test name=test>')
+        );
+    }
+
+    public function testInputTagWithCustomAndDefaultAttributes()
+    {
+        $this->assertEquals(
+            '<input name="custom" id="custom" class="custom" data-custom="value" type="text">',
+            $this->sortAttributesService->sortAttributes('<input data-custom="value" type="text" id="custom" class="custom" name="custom">')
+        );
+    }
+
+    public function testDivTagWithUnorderedAttributes()
+    {
+        $this->assertEquals(
+            '<div id="divId" class="divClass" data-custom="value">',
+            $this->sortAttributesService->sortAttributes('<div data-custom="value" class="divClass" id="divId">')
         );
     }
 }
