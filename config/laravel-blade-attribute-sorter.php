@@ -1,3 +1,16 @@
 <?php
 
-return [];
+return [
+    'default' => [
+        'id',
+        'class',
+    ],
+
+    'custom' => [
+        'form' => [
+            'action',
+            'required',
+            'method',
+        ],
+    ],
+];

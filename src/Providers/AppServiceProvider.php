@@ -2,11 +2,8 @@
 
 namespace Mantax559\LaravelBladeAttributeSorter\Providers;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Blade;
+use App\Console\Commands\SortBladeAttributesCommand;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +14,12 @@ class AppServiceProvider extends ServiceProvider
         $this->publishes([
             self::PATH_CONFIG => config_path('laravel-blade-attribute-sorter.php'),
         ], 'config');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                SortBladeAttributesCommand::class,
+            ]);
+        }
     }
 
     public function register(): void
