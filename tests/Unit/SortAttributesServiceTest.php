@@ -26,6 +26,67 @@ class SortAttributesServiceTest extends TestCase
         $this->sortAttributesService = new SortAttributesService();
     }
 
+    public function testSetAttributeOrderWithOnlyDefault()
+    {
+        $defaultOrder = ['data-id', 'data-name', 'data-class'];
+        $customOrder = null;
+
+        $expectedOrder = [
+            'default' => $defaultOrder,
+            'input' => ['name', 'id', 'class'],
+        ];
+
+        $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
+
+        $this->assertEquals($expectedOrder, $result);
+    }
+
+    public function testSetAttributeOrderWithOnlyCustom()
+    {
+        $defaultOrder = null;
+        $customOrder = ['div' => ['data-id', 'data-name', 'data-class']];
+
+        $expectedOrder = [
+            'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
+            'div' => ['data-id', 'data-name', 'data-class'],
+        ];
+
+        $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
+
+        $this->assertEquals($expectedOrder, $result);
+    }
+
+    public function testSetAttributeOrderWithBothDefaultAndCustom()
+    {
+        $defaultOrder = ['data-id', 'data-name', 'data-class'];
+        $customOrder = ['div' => ['data-id', 'data-name', 'data-class'], 'span' => ['class', 'id']];
+
+        $expectedOrder = [
+            'default' => $defaultOrder,
+            'div' => ['data-id', 'data-name', 'data-class'],
+            'span' => ['class', 'id'],
+        ];
+
+        $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
+
+        $this->assertEquals($expectedOrder, $result);
+    }
+
+    public function testSetAttributeOrderWithEmptyBoth()
+    {
+        $defaultOrder = [];
+        $customOrder = [];
+
+        $expectedOrder = [
+            'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
+            'input' => ['name', 'id', 'class'],
+        ];
+
+        $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
+
+        $this->assertEquals($expectedOrder, $result);
+    }
+
     public function testEmptyDivTag()
     {
         $this->assertEquals(
@@ -86,7 +147,7 @@ class SortAttributesServiceTest extends TestCase
     {
         $this->assertEquals(
             '<input name=test id=\'test\' class=test min="test" max="test" required pattern="test" type="text" value="test">',
-            $this->sortAttributesService->sortAttributes('<input id=\'test\' type="text" value="test" pattern="test" max="test" required min="test" class=test name=test>')
+            $this->sortAttributesService->sortAttributes('<input id=\'test\'     type="text" value="test"    pattern="test" max="test"   required min="test"   class=test  name=test>')
         );
     }
 
@@ -103,6 +164,35 @@ class SortAttributesServiceTest extends TestCase
         $this->assertEquals(
             '<div id="divId" class="divClass" data-custom="value">',
             $this->sortAttributesService->sortAttributes('<div data-custom="value" class="divClass" id="divId">')
+        );
+    }
+
+    public function test_1()
+    {
+        $this->assertEquals(
+            '<div id="divId" class="divClass" data-custom="value" />',
+            $this->sortAttributesService->sortAttributes('<div data-custom="value" class="divClass" id="divId"/>')
+        );
+    }
+
+    public function test_2()
+    {
+        $this->assertEquals(
+            '<div id="divId" class="divClass" data-custom="value" />',
+            $this->sortAttributesService->sortAttributes('<div data-custom="value" class="divClass" id="divId" />')
+        );
+    }
+
+    public function test_4()
+    {
+        $defaultOrder = [];
+        $customOrder = [];
+
+        $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
+
+        $this->assertEquals(
+            '<x-form::input name="product_attribute_values[{{ $index }}][attribute_value_id]" :selected="$productAttributeValue[\'pivot\'][\'attribute_value_id\'] ?? null" action="{{ isset($attributeGroup) ? route(\'catalog.attribute-groups.update\', $attributeGroup->id) : route(\'catalog.attribute-groups.store\') }}" enctype="multipart/form-data" method="POST" wire:click.prevent="removeProductAttributeValue({{ $index }})" />',
+            $this->sortAttributesService->sortAttributes('<x-form::input method="POST" action="{{ isset($attributeGroup) ? route(\'catalog.attribute-groups.update\', $attributeGroup->id) : route(\'catalog.attribute-groups.store\') }}" enctype="multipart/form-data" name="product_attribute_values[{{ $index }}][attribute_value_id]" :selected="$productAttributeValue[\'pivot\'][\'attribute_value_id\'] ?? null" wire:click.prevent="removeProductAttributeValue({{ $index }})"/>'),
         );
     }
 }
