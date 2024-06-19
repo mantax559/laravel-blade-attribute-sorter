@@ -27,28 +27,31 @@ class SortAttributesService
             );
         }
 
+        $this->attributeOrder = array_filter($this->attributeOrder, fn ($value) => ! empty($value));
+
         return $this->attributeOrder;
     }
 
     public function sortAttributes(string $content): string
     {
-        $attributePattern = '/<([a-zA-Z0-9\-:]+)((?:\s+[a-zA-Z\-:.]+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?)*)\s*>/m';
+        $attributePattern = '/<([a-zA-Z0-9\-:]+)((?:\s+[a-zA-Z\-:.]+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?)*)\s*(\/?)>/m';
 
         return preg_replace_callback($attributePattern, function ($matches) {
             $tag = $matches[1];
             $attributes = isset($matches[2]) ? trim($matches[2]) : '';
+            $selfClosing = isset($matches[3]) && $matches[3] === '/' ? ' /' : '';
 
             preg_match_all('/(\S+)=("[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+)|(\S+)/', $attributes, $attributeMatches, PREG_SET_ORDER);
 
             $sortedAttributes = $this->sortAttributesByOrder($tag, $attributeMatches);
 
-            return "<$tag".($sortedAttributes ? ' '.$sortedAttributes : '').'>';
+            return "<$tag".($sortedAttributes ? ' '.$sortedAttributes : '').$selfClosing.'>';
         }, $content);
     }
 
     private function sortAttributesByOrder(string $tag, array $attributes): string
     {
-        $customOrder = $this->attributeOrder[$tag] ?? null;
+        $customOrder = $this->attributeOrder[$tag] ?? [];
         $defaultOrder = $this->attributeOrder['default'];
 
         $sortedAttributes = [];
@@ -56,7 +59,7 @@ class SortAttributesService
 
         foreach ($attributes as $attribute) {
             $name = $attribute[1] ?? $attribute[3];
-            if ($customOrder && in_array($name, $customOrder)) {
+            if (in_array($name, $customOrder)) {
                 $sortedAttributes[$name] = trim($attribute[0]);
             } else {
                 $remainingAttributes[$name] = trim($attribute[0]);
@@ -64,11 +67,10 @@ class SortAttributesService
         }
 
         $finalAttributes = [];
-        if ($customOrder) {
-            foreach ($customOrder as $key) {
-                if (isset($sortedAttributes[$key])) {
-                    $finalAttributes[] = $sortedAttributes[$key];
-                }
+        foreach ($customOrder as $key) {
+            if (isset($sortedAttributes[$key])) {
+                $finalAttributes[] = $sortedAttributes[$key];
+                unset($remainingAttributes[$key]);
             }
         }
 

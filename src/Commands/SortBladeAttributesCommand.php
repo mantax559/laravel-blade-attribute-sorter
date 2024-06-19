@@ -2,9 +2,9 @@
 
 namespace Mantax559\LaravelBladeAttributeSorter\Commands;
 
-use Mantax559\LaravelBladeAttributeSorter\Services\SortAttributesService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Mantax559\LaravelBladeAttributeSorter\Services\SortAttributesService;
 
 class SortBladeAttributesCommand extends Command
 {
