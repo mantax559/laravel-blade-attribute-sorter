@@ -146,7 +146,7 @@ class SortAttributesServiceTest extends TestCase
     public function testInputTagWithAdditionalAttributes()
     {
         $this->assertEquals(
-            '<input name=test id=\'test\' class=test min="test" max="test" required pattern="test" type="text" value="test">',
+            '<input name=test id=\'test\' class=test min="test" max="test" pattern="test" required type="text" value="test">',
             $this->sortAttributesService->sortAttributes('<input id=\'test\'     type="text" value="test"    pattern="test" max="test"   required min="test"   class=test  name=test>')
         );
     }
@@ -186,13 +186,13 @@ class SortAttributesServiceTest extends TestCase
     public function test_4()
     {
         $defaultOrder = [];
-        $customOrder = [];
+        $customOrder = ['x-form::input' => ['enctype', 'wire:click.prevent-custom.select', ':selected', 'action']];
 
         $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
 
         $this->assertEquals(
-            '<x-form::input name="product_attribute_values[{{ $index }}][attribute_value_id]" :selected="$productAttributeValue[\'pivot\'][\'attribute_value_id\'] ?? null" action="{{ isset($attributeGroup) ? route(\'catalog.attribute-groups.update\', $attributeGroup->id) : route(\'catalog.attribute-groups.store\') }}" enctype="multipart/form-data" method="POST" wire:click.prevent="removeProductAttributeValue({{ $index }})" />',
-            $this->sortAttributesService->sortAttributes('<x-form::input method="POST" action="{{ isset($attributeGroup) ? route(\'catalog.attribute-groups.update\', $attributeGroup->id) : route(\'catalog.attribute-groups.store\') }}" enctype="multipart/form-data" name="product_attribute_values[{{ $index }}][attribute_value_id]" :selected="$productAttributeValue[\'pivot\'][\'attribute_value_id\'] ?? null" wire:click.prevent="removeProductAttributeValue({{ $index }})"/>'),
+            '<x-form::input enctype="multipart/form-data" wire:click.prevent-custom.select="test({{ $index }})" :selected="$testVariable[\'index1\'][\'index2\'] ?? null" action="{{ isset($randomVariable) ? route(\'routes.custom-route.index\', $random_variable->id) : route(\'routes.custom_route.index\') }}" name="array[{{ $index }}][id]" method="POST" required />',
+            $this->sortAttributesService->sortAttributes('<x-form::input method="POST" required action="{{ isset($randomVariable) ? route(\'routes.custom-route.index\', $random_variable->id) : route(\'routes.custom_route.index\') }}" enctype="multipart/form-data" name="array[{{ $index }}][id]" :selected="$testVariable[\'index1\'][\'index2\'] ?? null" wire:click.prevent-custom.select="test({{ $index }})"/>'),
         );
     }
 }

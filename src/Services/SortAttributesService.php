@@ -81,7 +81,7 @@ class SortAttributesService
             }
         }
 
-        ksort($remainingAttributes);
+        asort($remainingAttributes);
         foreach ($remainingAttributes as $attr) {
             $finalAttributes[] = $attr;
         }
