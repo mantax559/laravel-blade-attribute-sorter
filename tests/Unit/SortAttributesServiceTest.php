@@ -31,7 +31,7 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => $defaultOrder,
-            'input' => ['name', 'id', 'class'],
+            'custom' => ['input' => ['name', 'id', 'class']],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -46,7 +46,9 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
-            'div' => ['data-id', 'data-name', 'data-class'],
+            'custom' => [
+                'div' => ['data-id', 'data-name', 'data-class'],
+            ],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -64,8 +66,10 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => $defaultOrder,
-            'div' => ['data-id', 'data-name', 'data-class'],
-            'span' => ['class', 'id'],
+            'custom' => [
+                'div' => ['data-id', 'data-name', 'data-class'],
+                'span' => ['class', 'id'],
+            ],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -80,7 +84,9 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
-            'input' => ['name', 'id', 'class'],
+            'custom' => [
+                'input' => ['name', 'id', 'class'],
+            ],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);

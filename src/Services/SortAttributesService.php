@@ -10,7 +10,7 @@ class SortAttributesService
     {
         $this->attributeOrder = array_merge(
             ['default' => config('laravel-blade-attribute-sorter.default')],
-            (array) config('laravel-blade-attribute-sorter.custom'),
+            ['custom' => config('laravel-blade-attribute-sorter.custom')],
         );
     }
 
@@ -23,18 +23,19 @@ class SortAttributesService
         if (! empty($custom)) {
             $this->attributeOrder = array_merge(
                 ['default' => $this->attributeOrder['default']],
-                $custom
+                ['custom' => $custom]
             );
         }
 
-        $this->attributeOrder = array_filter($this->attributeOrder, fn ($value) => ! empty($value));
+        $this->attributeOrder['default'] = array_filter($this->attributeOrder['default'], fn ($value) => ! empty($value));
+        $this->attributeOrder['custom'] = array_filter($this->attributeOrder['custom'], fn ($value) => ! empty($value));
 
         return $this->attributeOrder;
     }
 
     public function sortAttributes(string $content): string
     {
-        $attributePattern = '/<([a-zA-Z0-9\-:.@]+)((?:\s+[a-zA-Z0-9\-:.@]+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?)*)\s*(\/?)>/m';
+        $attributePattern = '/<([a-zA-Z0-9\-:.]+)((?:\s+[a-zA-Z0-9\-:.@]+(?:=(?:"[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?)*)\s*(\/?)>/m';
 
         return preg_replace_callback($attributePattern, function ($matches) {
             $tag = $matches[1];
@@ -51,7 +52,7 @@ class SortAttributesService
 
     private function sortAttributesByOrder(string $tag, array $attributes): string
     {
-        $customOrder = $this->attributeOrder[$tag] ?? [];
+        $customOrder = $this->attributeOrder['custom'][$tag] ?? [];
         $defaultOrder = $this->attributeOrder['default'];
 
         $sortedAttributes = [];
