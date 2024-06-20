@@ -34,7 +34,7 @@ class SortAttributesService
 
     public function sortAttributes(string $content): string
     {
-        $attributePattern = '/<([a-zA-Z0-9\-:]+)((?:\s+[a-zA-Z\-:.@]+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?)*)\s*(\/?)>/m';
+        $attributePattern = '/<([a-zA-Z0-9\-:.@]+)((?:\s+[a-zA-Z0-9\-:.@]+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?)*)\s*(\/?)>/m';
 
         return preg_replace_callback($attributePattern, function ($matches) {
             $tag = $matches[1];
