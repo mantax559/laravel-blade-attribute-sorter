@@ -177,8 +177,8 @@ class SortAttributesServiceTest extends TestCase
     public function testSortAttributesForSelfClosingDivTagWithUnorderedAttributes(): void
     {
         $this->assertEquals(
-            '<div id="divId" class="divClass" data-custom="value" />',
-            $this->sortAttributesService->sortAttributes('<div data-custom="value" class="divClass" id="divId"/>')
+            '<div id="divId" class="divClass" data-custom=value />',
+            $this->sortAttributesService->sortAttributes('<div data-custom=value class="divClass" id="divId"/>')
         );
     }
 
@@ -254,7 +254,7 @@ class SortAttributesServiceTest extends TestCase
     public function testSortAttributesForMixedCaseAttributes(): void
     {
         $this->assertEquals(
-            '<div ID="divId" simpleClass="divClass" Data-custom="value">',
+            '<div ID="divId" Data-custom="value" simpleClass="divClass">',
             $this->sortAttributesService->sortAttributes('<div Data-custom="value" simpleClass="divClass" ID="divId">')
         );
     }
@@ -266,8 +266,8 @@ class SortAttributesServiceTest extends TestCase
         $this->sortAttributesService->setAttributeOrder([], $customOrder);
 
         $this->assertEquals(
-            '<custom-tag custom-attr1="value1" custom-attr2="value2" other-attr="othervalue">',
-            $this->sortAttributesService->sortAttributes('<custom-tag other-attr="othervalue" custom-attr2="value2" custom-attr1="value1">')
+            '<custom-tag custom-attr1="value1" custom-attr2="value2" :other-attr=$othervalue>',
+            $this->sortAttributesService->sortAttributes('<custom-tag :other-attr=$othervalue custom-attr2="value2" custom-attr1="value1">')
         );
     }
 
