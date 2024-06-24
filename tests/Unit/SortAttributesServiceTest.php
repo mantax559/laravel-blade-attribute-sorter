@@ -254,8 +254,8 @@ class SortAttributesServiceTest extends TestCase
     public function testSortAttributesForMixedCaseAttributes(): void
     {
         $this->assertEquals(
-            '<div id="divId" class="divClass" data-custom="value">',
-            $this->sortAttributesService->sortAttributes('<div Data-custom="value" Class="divClass" ID="divId">')
+            '<div ID="divId" simpleClass="divClass" Data-custom="value">',
+            $this->sortAttributesService->sortAttributes('<div Data-custom="value" simpleClass="divClass" ID="divId">')
         );
     }
 
