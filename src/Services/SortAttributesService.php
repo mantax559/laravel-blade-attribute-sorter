@@ -50,7 +50,7 @@ class SortAttributesService
         preg_match_all('/([a-zA-Z0-9\-:.@]+)(?:=("[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+))?/', $attributes, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
-            $name = mb_strtolower($match[1]);
+            $name = $match[1];
             $value = $match[2] ?? $name;
             $attributeMatches[] = [
                 'name' => $name,
@@ -71,7 +71,7 @@ class SortAttributesService
         $remainingAttributes = [];
 
         foreach ($attributes as $attribute) {
-            $name = $attribute['name'];
+            $name = mb_strtolower($attribute['name']);
             if ($this->matchesPattern($name, $customOrder)) {
                 $sortedAttributes[$name] = trim($attribute['attribute']);
             } else {
