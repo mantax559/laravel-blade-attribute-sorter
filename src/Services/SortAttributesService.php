@@ -39,15 +39,78 @@ class SortAttributesService
 
         return preg_replace_callback($attributePattern, function ($matches) {
             $tag = $matches[1];
-            $attributes = isset($matches[2]) ? trim($matches[2]) : '';
-            $selfClosing = isset($matches[3]) && $matches[3] === '/' ? ' /' : '';
-
-            preg_match_all('/(\S+)=("[^"]*"|\'[^\']*\'|{{[^}]*}}|\S+)|(\S+)/', $attributes, $attributeMatches, PREG_SET_ORDER);
-
+            $attributes = trim($matches[2]);
+            $selfClosing = $matches[3] === '/' ? ' /' : '';
+            $attributeMatches = $this->getAttributeMatches($attributes);
             $sortedAttributes = $this->sortAttributesByOrder($tag, $attributeMatches);
 
             return "<$tag".($sortedAttributes ? ' '.$sortedAttributes : '').$selfClosing.'>';
         }, $content);
+    }
+
+    private function getAttributeMatches(string $attributes): array
+    {
+        $attributes = preg_replace('/\s+/', ' ', $attributes);
+        $attributes = trim($attributes);
+
+        $valueOpenChar = '';
+        $valueCloseChar = '';
+        $getValueOpenChar = false;
+        $isName = true;
+        $name = '';
+        $value = '';
+        $skip = false;
+        $attributeMatches = [];
+        $closingTagIsTwoChars = false;
+        foreach (str_split($attributes) as $letter) {
+            if ($skip) {
+                $skip = false;
+            } elseif ($getValueOpenChar) {
+                $valueOpenChar = $letter;
+                $valueCloseChar = $valueOpenChar === '{' ? '}' : $valueOpenChar;
+                $closingTagIsTwoChars = $valueOpenChar === '{';
+                $getValueOpenChar = false;
+            } elseif ($valueCloseChar === $letter) {
+                if($closingTagIsTwoChars) {
+                    $value .= $letter;
+                    $closingTagIsTwoChars = false;
+                    continue;
+                }
+                $attributeMatches[] = [
+                    'name' => $name,
+                    'value' => $value,
+                    'attribute' => "$name=$valueOpenChar$value$valueCloseChar",
+                ];
+                $valueOpenChar = '';
+                $valueCloseChar = '';
+                $getValueOpenChar = false;
+                $isName = true;
+                $name = '';
+                $value = '';
+                $skip = true;
+            } elseif ($letter === '=' && $isName) {
+                $isName = false;
+                $getValueOpenChar = true;
+            } elseif ($letter === ' ' && $isName) {
+                $attributeMatches[] = [
+                    'name' => $name,
+                    'value' => $name,
+                    'attribute' => $name,
+                ];
+                $valueOpenChar = '';
+                $valueCloseChar = '';
+                $getValueOpenChar = false;
+                $isName = true;
+                $name = '';
+                $value = '';
+            } elseif ($isName) {
+                $name .= $letter;
+            } else {
+                $value .= $letter;
+            }
+        }
+
+        return $attributeMatches;
     }
 
     private function sortAttributesByOrder(string $tag, array $attributes): string
@@ -59,17 +122,17 @@ class SortAttributesService
         $remainingAttributes = [];
 
         foreach ($attributes as $attribute) {
-            $name = $attribute[1] ?? $attribute[3];
+            $name = $attribute['name'];
             if ($this->matchesPattern($name, $customOrder)) {
-                $sortedAttributes[$name] = trim($attribute[0]);
+                $sortedAttributes[$name] = trim($attribute['attribute']);
             } else {
-                $remainingAttributes[$name] = trim($attribute[0]);
+                $remainingAttributes[$name] = trim($attribute['attribute']);
             }
         }
 
         $finalAttributes = [];
         foreach ($customOrder as $key) {
-            if (strpos($key, '*') !== false) {
+            if (str_contains($key, '*')) {
                 $wildcardAttributes = [];
                 foreach ($sortedAttributes as $attrName => $attrValue) {
                     if ($this->matchesPattern($attrName, [$key])) {
