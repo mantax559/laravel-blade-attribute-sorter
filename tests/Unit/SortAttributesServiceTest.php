@@ -31,7 +31,7 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => $defaultOrder,
-            'input' => ['name', 'id', 'class'],
+            'custom' => ['input' => ['name', 'id', 'class']],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -46,7 +46,9 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
-            'div' => ['data-id', 'data-name', 'data-class'],
+            'custom' => [
+                'div' => ['data-id', 'data-name', 'data-class'],
+            ],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -64,8 +66,10 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => $defaultOrder,
-            'div' => ['data-id', 'data-name', 'data-class'],
-            'span' => ['class', 'id'],
+            'custom' => [
+                'div' => ['data-id', 'data-name', 'data-class'],
+                'span' => ['class', 'id'],
+            ],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -80,7 +84,9 @@ class SortAttributesServiceTest extends TestCase
 
         $expectedOrder = [
             'default' => ['id', 'name', 'class', 'min', 'max', 'required'],
-            'input' => ['name', 'id', 'class'],
+            'custom' => [
+                'input' => ['name', 'id', 'class'],
+            ],
         ];
 
         $result = $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
@@ -139,16 +145,16 @@ class SortAttributesServiceTest extends TestCase
     public function testSortAttributesForInputTagWithAllCommonAttributes(): void
     {
         $this->assertEquals(
-            '<input name="test" id="test" class="test" min="test" max=test required>',
-            $this->sortAttributesService->sortAttributes('<input id="test" max=test required min="test" class="test" name="test">')
+            '<input name="test" id="test" class="test" min="test" max="test" required>',
+            $this->sortAttributesService->sortAttributes('<input id="test" max="test" required min="test" class="test" name="test">')
         );
     }
 
     public function testSortAttributesForInputTagWithAdditionalAttributes(): void
     {
         $this->assertEquals(
-            '<input name=test id=\'test\' class=test min="test" max="test" pattern="test" required type="text" value="test">',
-            $this->sortAttributesService->sortAttributes('<input id=\'test\'     type="text" value="test"    pattern="test" max="test"   required min="test"   class=test  name=test>')
+            '<input name="test" id=\'test\' class="test" min="test" max="test" required pattern="test" type="text" value="test">',
+            $this->sortAttributesService->sortAttributes('<input id=\'test\' type="text" value="test" pattern="test" max="test" required min="test" class="test" name="test">')
         );
     }
 
@@ -184,6 +190,14 @@ class SortAttributesServiceTest extends TestCase
         );
     }
 
+    public function testSortAttributesForAsyncScriptTag(): void
+    {
+        $this->assertEquals(
+            '<script async src="https://example.com?id={{ $value }}"></script>',
+            $this->sortAttributesService->sortAttributes('<script async src="https://example.com?id={{ $value }}"></script>')
+        );
+    }
+
     public function testSortAttributesForXFormInputWithCustomOrder(): void
     {
         $defaultOrder = [];
@@ -194,7 +208,7 @@ class SortAttributesServiceTest extends TestCase
         $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
 
         $this->assertEquals(
-            '<x-form::input enctype="multipart/form-data" wire:click.prevent-custom.select="test({{ $index }})" :selected="$testVariable[\'index1\'][\'index2\'] ?? null" action="{{ isset($randomVariable) ? route(\'routes.custom-route.index\', $random_variable->id) : route(\'routes.custom_route.index\') }}" name="array[{{ $index }}][id]" method="POST" required />',
+            '<x-form::input enctype="multipart/form-data" wire:click.prevent-custom.select="test({{ $index }})" :selected="$testVariable[\'index1\'][\'index2\'] ?? null" action="{{ isset($randomVariable) ? route(\'routes.custom-route.index\', $random_variable->id) : route(\'routes.custom_route.index\') }}" name="array[{{ $index }}][id]" required method="POST" />',
             $this->sortAttributesService->sortAttributes('<x-form::input method="POST" required action="{{ isset($randomVariable) ? route(\'routes.custom-route.index\', $random_variable->id) : route(\'routes.custom_route.index\') }}" enctype="multipart/form-data" name="array[{{ $index }}][id]" :selected="$testVariable[\'index1\'][\'index2\'] ?? null" wire:click.prevent-custom.select="test({{ $index }})"/>'),
         );
     }
@@ -224,8 +238,48 @@ class SortAttributesServiceTest extends TestCase
         $this->sortAttributesService->setAttributeOrder($defaultOrder, $customOrder);
 
         $this->assertEquals(
-            '<x-complex::form wire:model="formData" data-custom={{ $random }} :value="formValue" aria-describedby="test" aria-label="test" @submit=handleSubmit enctype=multipart/form-data method="POST" />',
-            $this->sortAttributesService->sortAttributes('<x-complex::form method="POST" enctype=multipart/form-data @submit=handleSubmit data-custom={{ $random }} wire:model="formData" aria-label="test" :value="formValue" aria-describedby="test" />')
+            '<x-complex::form wire:model="formData" data-custom={{ $random }} :value="formValue" aria-describedby="test" aria-label="test" @submit="handleSubmit" enctype="multipart/form-data" method="POST" />',
+            $this->sortAttributesService->sortAttributes('<x-complex::form method="POST" enctype="multipart/form-data" @submit="handleSubmit" data-custom={{ $random }} wire:model="formData" aria-label="test" :value="formValue" aria-describedby="test" />')
+        );
+    }
+
+    public function testSortAttributesForScriptTagWithNonce(): void
+    {
+        $this->assertEquals(
+            '<script async nonce="random_nonce" src="https://example.com/script.js"></script>',
+            $this->sortAttributesService->sortAttributes('<script async src="https://example.com/script.js" nonce="random_nonce"></script>')
+        );
+    }
+
+    public function testSortAttributesForMixedCaseAttributes(): void
+    {
+        $this->assertEquals(
+            '<div id="divId" class="divClass" data-custom="value">',
+            $this->sortAttributesService->sortAttributes('<div Data-custom="value" Class="divClass" ID="divId">')
+        );
+    }
+
+    public function testSortAttributesForCustomTags(): void
+    {
+        $customOrder = ['custom-tag' => ['custom-attr1', 'custom-attr2']];
+
+        $this->sortAttributesService->setAttributeOrder([], $customOrder);
+
+        $this->assertEquals(
+            '<custom-tag custom-attr1="value1" custom-attr2="value2" other-attr="othervalue">',
+            $this->sortAttributesService->sortAttributes('<custom-tag other-attr="othervalue" custom-attr2="value2" custom-attr1="value1">')
+        );
+    }
+
+    public function testSortAttributesWithHyphenatedAttributes(): void
+    {
+        $customOrder = ['custom-component' => ['data-custom-id', 'data-custom-name', 'aria-label']];
+
+        $this->sortAttributesService->setAttributeOrder([], $customOrder);
+
+        $this->assertEquals(
+            '<custom-component data-custom-id="123" data-custom-name="example" aria-label="label" class="extra-class">',
+            $this->sortAttributesService->sortAttributes('<custom-component class="extra-class" aria-label="label" data-custom-name="example" data-custom-id="123">')
         );
     }
 }
